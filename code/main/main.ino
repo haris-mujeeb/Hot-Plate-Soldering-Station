@@ -1,12 +1,12 @@
-#include <Rotary.h>
-#include <ezButton.h>
-#include "ST7920_SPI.h"
 #include <SPI.h>
-#include "small5x6_font.h"
-#include "c64enh_font.h"
-#include "small4x5_font.h"
-#include "tiny3x7sq_font.h"
-#include <Menu.h>
+#include "src/Rotary/Rotary.h"
+#include "src/button/src/ezButton.h"
+#include "src/ST7920_SPI/ST7920_SPI.h"
+#include "src/PropFonts/small5x6_font.h"
+#include "src/PropFonts/c64enh_font.h"
+#include "src/PropFonts/small4x5_font.h"
+#include "src/PropFonts/tiny3x7sq_font.h"
+#include "src/menu/Menu.h"
 
 //uses https://github.com/brianlow/Rotary
 //uses ST7920_SPI library
