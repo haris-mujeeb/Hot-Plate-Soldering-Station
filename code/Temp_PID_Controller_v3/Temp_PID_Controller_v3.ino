@@ -55,7 +55,7 @@ void loop() {
   static unsigned long elapsedTimeMS = millis() - startTimeMS;
   static unsigned long oldTimeMS = millis();
 
-  while (phaseCount < NUM_OF_PHASES) {
+  while (phaseCount < NUM_OF_PHASES) {     
     // calculating delta time
     deltaTime = millis() - oldTimeMS;
     deltaTime = deltaTime / 1000;  // ms -> sec
