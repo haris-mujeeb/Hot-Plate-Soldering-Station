@@ -13,13 +13,13 @@
 //14(CIPO), 15(SCK), 16(COPI)
 
 //below are micro pins
-//#define LCD_CLK 15
-//#define LCD_DATA 16
-//#define LCD_CS 10
-
-#define LCD_CLK 13
-#define LCD_DATA 11
+#define LCD_CLK 15
+#define LCD_DATA 16
 #define LCD_CS 10
+
+//#define LCD_CLK 13
+//#define LCD_DATA 11
+//#define LCD_CS 10
 
 #define ROT_CLK 2
 #define ROT_SD 3

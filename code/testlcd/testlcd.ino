@@ -12,7 +12,7 @@ void loop(void) {
   u8g2.firstPage();
   do {
     u8g2.setFont(u8g2_font_ncenB14_tr);
-    u8g2.drawStr(0,15,"Hello World!");
+    u8g2.drawStr(0,15,"working");
     delay(100);
   } while ( u8g2.nextPage() );
   delay(1000);
