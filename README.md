@@ -9,6 +9,7 @@
 - Set Temperature Manually
 
 ## Soldering Demo:
+https://github.com/user-attachments/assets/88b22581-7505-4ef9-8fa4-fe2a85b40a39
 
 
 ## GUI Demo:
