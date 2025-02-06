@@ -355,23 +355,19 @@ MenuItem(miAbout, "About               >", Menu::NullItem, miSound, miExit, Menu
 
 const uint8_t table_icon[] PROGMEM = { 16, 16,
                                        0x80, 0xC0, 0x60, 0x10, 0x0, 0x8, 0x8, 0x8, 0x8, 0x8, 0x8, 0x88, 0xC8, 0x28, 0xF8, 0xF8,
-                                       0xFF, 0xFF, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0xFF, 0xFF, 0x0, 0xF, 0xF
-                                     };
+                                       0xFF, 0xFF, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0xFF, 0xFF, 0x0, 0xF, 0xF };
 
 const uint8_t fire_icon[] PROGMEM = { 16, 16,
                                       12, 159, 243, 96, 0, 0, 0, 12, 159, 243, 96, 0, 12, 159, 243, 96,
-                                      3, 7, 28, 24, 0, 0, 0, 3, 7, 28, 24, 0, 3, 7, 28, 24
-                                    };
+                                      3, 7, 28, 24, 0, 0, 0, 3, 7, 28, 24, 0, 3, 7, 28, 24 };
 
 const uint8_t fan_icon[] PROGMEM = { 16, 16,
                                      254, 255, 3, 27, 51, 195, 195, 51, 27, 3, 255, 254, 0, 0, 0, 0,
-                                     31, 63, 48, 50, 51, 48, 48, 51, 50, 48, 63, 31, 0, 0, 0, 0
-                                   };
+                                     31, 63, 48, 50, 51, 48, 48, 51, 50, 48, 63, 31, 0, 0, 0, 0 };
 
 const uint8_t fan2_icon[] PROGMEM = { 16, 16,
                                       254, 255, 3, 99, 99, 195, 251, 155, 131, 3, 255, 254, 0, 0, 0, 0,
-                                      31, 63, 48, 48, 54, 55, 48, 49, 49, 48, 63, 31, 0, 0, 0, 0
-                                    };
+                                      31, 63, 48, 48, 54, 55, 48, 49, 49, 48, 63, 31, 0, 0, 0, 0 };
 
 
 //----------------
@@ -381,7 +377,7 @@ const uint8_t fan2_icon[] PROGMEM = { 16, 16,
 #define REFRESH_LOOP_INTERVAL 200
 float Kp = 2;     // Proportional gain
 float Ki = 0.01;  // Integral gain
-float Kd = 5;   // Derivative gain
+float Kd = 5;     // Derivative gain
 int minOutput = 0;
 int maxOutput = 255;
 
@@ -395,47 +391,46 @@ struct settings config;
 #include <stdarg.h>
 #include <Arduino.h>
 
-int ardprintf(char *str, ...)
-{
-  int i, count=0, j=0, flag=0;
-  char temp[ARDBUFFER+1];
-  for(i=0; str[i]!='\0';i++)  if(str[i]=='%')  count++;
+int ardprintf(char *str, ...) {
+  int i, count = 0, j = 0, flag = 0;
+  char temp[ARDBUFFER + 1];
+  for (i = 0; str[i] != '\0'; i++)
+    if (str[i] == '%') count++;
 
   va_list argv;
   va_start(argv, count);
-  for(i=0,j=0; str[i]!='\0';i++)
-  {
-    if(str[i]=='%')
-    {
+  for (i = 0, j = 0; str[i] != '\0'; i++) {
+    if (str[i] == '%') {
       temp[j] = '\0';
       Serial.print(temp);
-      j=0;
+      j = 0;
       temp[0] = '\0';
 
-      switch(str[++i])
-      {
-        case 'd': Serial.print(va_arg(argv, int));
-                  break;
-        case 'l': Serial.print(va_arg(argv, long));
-                  break;
-        case 'f': Serial.print(va_arg(argv, double));
-                  break;
-        case 'c': Serial.print((char)va_arg(argv, int));
-                  break;
-        case 's': Serial.print(va_arg(argv, char *));
-                  break;
-        default:  ;
+      switch (str[++i]) {
+        case 'd':
+          Serial.print(va_arg(argv, int));
+          break;
+        case 'l':
+          Serial.print(va_arg(argv, long));
+          break;
+        case 'f':
+          Serial.print(va_arg(argv, double));
+          break;
+        case 'c':
+          Serial.print((char)va_arg(argv, int));
+          break;
+        case 's':
+          Serial.print(va_arg(argv, char *));
+          break;
+        default:;
       };
-    }
-    else 
-    {
+    } else {
       temp[j] = str[i];
-      j = (j+1)%ARDBUFFER;
-      if(j==0) 
-      {
+      j = (j + 1) % ARDBUFFER;
+      if (j == 0) {
         temp[ARDBUFFER] = '\0';
         Serial.print(temp);
-        temp[0]='\0';
+        temp[0] = '\0';
       }
     }
   };
@@ -622,7 +617,23 @@ void adjustscreen(int *vars) {
   }
 }
 
+int getTempAtTime(int elapsed_time, int *gprms) {
+  int y2 = gprms[5];
+  int y3 = gprms[6];
+  int x1 = gprms[0];
+  int x2 = gprms[1];
+  int x3 = gprms[2];
+  int x4 = gprms[3];
+  int x5 = gprms[4];
 
+  if (elapsed_time < x1) return (y2 / x1) * elapsed_time;
+  if (elapsed_time < x2) return y2;
+  if (elapsed_time < x3) return ((y3 - y2) / (x3 - x2)) * elapsed_time - ((y3 - y2) / (x3 - x2)) * x2 + y2;
+  if (elapsed_time < x4) return y3;
+  if (elapsed_time < x5) return (-y3/(x5-x4))*elapsed_time - (-y3/(x5-x4))*x4 + y3;
+}
+
+#define REFRESH_TIMEPROCEDURE 1000
 void procedurescreen() {
   lcd.setFont(Tiny3x7SqPL);
   lcd.cls();
@@ -647,7 +658,7 @@ void procedurescreen() {
   int gprms[] = { x1, x2, x3, x4, x5, y2, y3 };
 
   int menu_id = 0;
-  int elapsed_time = 400;
+  int elapsed_time = 0;
   bool updatemenu = true;
 
   int origin_x = 12;
@@ -659,7 +670,37 @@ void procedurescreen() {
   int y_scale = floor(temp_max / hy);
   int x_scale = ceil(second_max / wx) + 1;
 
+  unsigned long previousMillis_PIDLOOP = 0;
+  unsigned long currentMillis;
+  int procedure_status = 1;  // -1 for pause 0 for stop and 1 for started (ongoing)
+  char disp_option[] = "Start ";
+  config.temperature_set = 40;
+  pid.setpoint(config.temperature_set);
+  int pid_output;
+
   while (1) {
+    currentMillis = millis();
+    if (currentMillis - previousMillis_PIDLOOP > REFRESH_LOOP_INTERVAL) {
+      previousMillis_PIDLOOP = currentMillis;
+      config.temperature_current = thermocouple.readCelsius();
+      pid_output = pid.compute(config.temperature_current);
+      Serial.print(config.temperature_current);
+      Serial.print(" ");
+      Serial.println(pid_output);
+      analogWrite(SCR_CNTRL, pid_output);
+    }
+
+    if (currentMillis - previousMillis_PIDLOOP > REFRESH_TIMEPROCEDURE) {
+      if (procedure_status == 1) {
+        elapsed_time++;
+        config.temperature_set = getTempAtTime(elapsed_time, gprms);
+        pid.setpoint(config.temperature_set);
+        Serial.println(config.temperature_set);
+      } else if (procedure_status == -1) {
+        Serial.println("Procedure paused");
+      }
+    }
+
     if (updatemenu) {
       lcd.cls();
       sprintf(cy3, "%d", y3);
@@ -675,7 +716,7 @@ void procedurescreen() {
 
       lcd.setFont(Small5x6PL);
 
-      lcd.printStr(origin_x + wx + 2, 2, "Start");
+      lcd.printStr(origin_x + wx + 2, 2, disp_option);
       lcd.printStr(origin_x + wx + 2, 13, "Cancel");
       lcd.printStr(origin_x + wx + 2, 24, "Adjust");
       lcd.printStr(origin_x + wx + 2, 35, "< back");
@@ -739,7 +780,7 @@ void procedurescreen() {
 
     observe = getinput();
     if (((observe == R_RIGHT) || (observe == R_LEFT))) {
-      observe == R_RIGHT ? menu_id++ : menu_id--;
+      observe == R_LEFT ? menu_id++ : menu_id--;
       if (menu_id > 3) menu_id = 0;
       if (menu_id < 0) menu_id = 3;
       updatemenu = true;
@@ -755,9 +796,25 @@ void procedurescreen() {
     if (observe == BUTN2) {
       switch (menu_id) {
         case 3:
+          if (procedure_status == 0) {
+            procedure_status = 1;
+            elapsed_time = 0;
+            strcpy(disp_option, "Start ");
+          } else if (procedure_status == 1) {
+            procedure_status = -1;
+            strcpy(disp_option, "Paused");
+          }
+          updatemenu = true;
           break;
 
+
         case 2:
+          procedure_status = 0;
+          elapsed_time = 0;
+          config.temperature_set = 40;
+          pid.setpoint(config.temperature_set);
+          analogWrite(SCR_CNTRL, 0);
+          updatemenu = true;
           break;
 
         case 1:
@@ -859,9 +916,9 @@ void homescreen(void) {
       Serial.print(config.temperature_current);
       Serial.print(" ");
       Serial.println(pid_output);
-      analogWrite(SCR_CNTRL,pid_output);
+      analogWrite(SCR_CNTRL, pid_output);
     }
-    if ((currentMillis - previousMillis > REFRESH_INTERVAL ) || updatemenu) {
+    if ((currentMillis - previousMillis > REFRESH_INTERVAL) || updatemenu) {
       previousMillis = currentMillis;
 
 
@@ -933,6 +990,7 @@ void homescreen(void) {
 void menuscreen(void) {
   lcd.setFont(Small5x6PL);
   lcd.cls();
+  analogWrite(SCR_CNTRL, 0);  //when browsing menu turn off the heater
   input_mode observe;
   engine->navigate(&miMainmenu);
   bool update_menu = true;
@@ -995,22 +1053,22 @@ void setup(void) {
   Serial.begin(115200);
   r1.begin(true);
   pinMode(BUZZER, OUTPUT);
-  pinMode(SCR_CNTRL,OUTPUT);
-  pinMode(FAN_CNTRL,OUTPUT);
+  pinMode(SCR_CNTRL, OUTPUT);
+  pinMode(FAN_CNTRL, OUTPUT);
   digitalWrite(BUZZER, LOW);
   digitalWrite(SCR_CNTRL, LOW);
   analogWrite(FAN_CNTRL, 50);
-  
+
   SPI.begin();
   config.sound_feedback = true;
   config.temperature_set = 27;
   config.temperature_current = thermocouple.readCelsius();
   config.fanspeed = 80;
-  pid.begin();          // initialize the PID instance
-  pid.setpoint(27);    // The "goal" the PID controller tries to "reach"
-  pid.tune(Kp, Ki, Kd);    // Tune the PID, arguments: kP, kI, kD
-  pid.limit(0, 255); 
-  
+  pid.begin();           // initialize the PID instance
+  pid.setpoint(27);      // The "goal" the PID controller tries to "reach"
+  pid.tune(Kp, Ki, Kd);  // Tune the PID, arguments: kP, kI, kD
+  pid.limit(0, 255);
+
 
   Serial.print("Started Base");
   lcd.init();
