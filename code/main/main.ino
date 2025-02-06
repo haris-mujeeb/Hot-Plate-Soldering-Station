@@ -671,6 +671,7 @@ void procedurescreen() {
   int x_scale = ceil(second_max / wx) + 1;
 
   unsigned long previousMillis_PIDLOOP = 0;
+  unsigned long previousMillis_PROCEDURELOOP = 0;
   unsigned long currentMillis;
   int procedure_status = 1;  // -1 for pause 0 for stop and 1 for started (ongoing)
   char disp_option[] = "Start ";
@@ -690,7 +691,8 @@ void procedurescreen() {
       analogWrite(SCR_CNTRL, pid_output);
     }
 
-    if (currentMillis - previousMillis_PIDLOOP > REFRESH_TIMEPROCEDURE) {
+    if (currentMillis - previousMillis_PROCEDURELOOP > REFRESH_TIMEPROCEDURE) {
+      previousMillis_PROCEDURELOOP = currentMillis;
       if (procedure_status == 1) {
         elapsed_time++;
         config.temperature_set = getTempAtTime(elapsed_time, gprms);
@@ -699,6 +701,8 @@ void procedurescreen() {
       } else if (procedure_status == -1) {
         Serial.println("Procedure paused");
       }
+
+      updatemenu = true;// updates the menu every one second
     }
 
     if (updatemenu) {
@@ -723,6 +727,7 @@ void procedurescreen() {
 
       lcd.setFont(Tiny3x7SqPL);
 
+      if (procedure_status == 1 || procedure_status == -1) lcd.printStr(origin_x + elapsed_time / x_scale, origin_y - config.temperature_current / y_scale, "x");
 
       lcd.printStr(2, 2, "Time:");
       lcd.printStr(23, 2, const_cast<char *>(celapsed_time));
