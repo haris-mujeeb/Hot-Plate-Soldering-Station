@@ -25,7 +25,7 @@ https://github.com/haris-mujeeb/Temperature_PID_Controller/assets/57053470/dda72
 - [ ] Implement Procedure control
 - [ ] Implement FAN and SOUND control
 - [ ] Assemble Stuff
-- [ ] Test STuff
+- [x] Test STuff
 - [ ] Add Holes for (USB, Sensor and Heater wires)
 
 ## Libraries
