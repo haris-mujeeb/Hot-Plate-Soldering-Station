@@ -4,6 +4,7 @@ const int hotPlatePin = 9;
 const int thermoDO = 4;
 const int thermoCS = 5;
 const int thermoCLK = 6;
+
 const float toleranceInDegrees = 0.5;
 int dutyCycle;
 float pidOutput, desiredTemp, tempSensor, error, integral, derivative, lastError;

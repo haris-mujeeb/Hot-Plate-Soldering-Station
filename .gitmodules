@@ -15,3 +15,9 @@
 	path = code/main/src/button
 	url = https://github.com/thesunRider/button.git
 	branch = patch-1
+[submodule "code/main/src/MAX6675-library"]
+	path = code/main/src/MAX6675-library
+	url = https://github.com/adafruit/MAX6675-library.git
+[submodule "code/main/src/PIDArduino"]
+	path = code/main/src/PIDArduino
+	url = https://github.com/DonnyCraft1/PIDArduino.git

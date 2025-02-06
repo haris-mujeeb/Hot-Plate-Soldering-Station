@@ -7,12 +7,8 @@
 #include "src/PropFonts/small4x5_font.h"
 #include "src/PropFonts/tiny3x7sq_font.h"
 #include "src/menu/Menu.h"
-
-//uses https://github.com/brianlow/Rotary
-//uses ST7920_SPI library
-//uses ezbutton
-//uses https://github.com/0xPIT/menu.git
-
+#include "src/MAX6675-library/max6675.h"
+#include "src/PIDArduino/src/PIDcontroller.h"
 
 //14(CIPO), 15(SCK), 16(COPI)
 
@@ -27,14 +23,23 @@
 
 #define BTN2 4
 #define BUZZER 2
-#define SCR_CNTRL 4
-#define FAN_CNTRL 3
+
+#define SCR_CNTRL 11
+#define FAN_CNTRL 10
+
+//used pins : 2 3 4 5 6 7 8 9 10 11  15 16 17
+
+#define THERMO_CLK 9
+#define THERMO_DAT 7
+#define THERMO_CS 8
 
 #define SCR_WD 128
 #define SCR_HT 64
 
+//pwm at 3 and 11: 980 Hz
+// pwm all: 3, 5, 6, 9, 10, 11, 13
 
-
+MAX6675 thermocouple(THERMO_CLK, THERMO_CS, THERMO_DAT);
 Rotary r1 = Rotary(ROT_CLK, ROT_SD);
 ezButton rb1(ROT_BTN);
 ezButton b2(BTN2);
@@ -350,29 +355,95 @@ MenuItem(miAbout, "About               >", Menu::NullItem, miSound, miExit, Menu
 
 const uint8_t table_icon[] PROGMEM = { 16, 16,
                                        0x80, 0xC0, 0x60, 0x10, 0x0, 0x8, 0x8, 0x8, 0x8, 0x8, 0x8, 0x88, 0xC8, 0x28, 0xF8, 0xF8,
-                                       0xFF, 0xFF, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0xFF, 0xFF, 0x0, 0xF, 0xF };
+                                       0xFF, 0xFF, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0xFF, 0xFF, 0x0, 0xF, 0xF
+                                     };
 
 const uint8_t fire_icon[] PROGMEM = { 16, 16,
                                       12, 159, 243, 96, 0, 0, 0, 12, 159, 243, 96, 0, 12, 159, 243, 96,
-                                      3, 7, 28, 24, 0, 0, 0, 3, 7, 28, 24, 0, 3, 7, 28, 24 };
+                                      3, 7, 28, 24, 0, 0, 0, 3, 7, 28, 24, 0, 3, 7, 28, 24
+                                    };
 
 const uint8_t fan_icon[] PROGMEM = { 16, 16,
                                      254, 255, 3, 27, 51, 195, 195, 51, 27, 3, 255, 254, 0, 0, 0, 0,
-                                     31, 63, 48, 50, 51, 48, 48, 51, 50, 48, 63, 31, 0, 0, 0, 0 };
+                                     31, 63, 48, 50, 51, 48, 48, 51, 50, 48, 63, 31, 0, 0, 0, 0
+                                   };
 
 const uint8_t fan2_icon[] PROGMEM = { 16, 16,
                                       254, 255, 3, 99, 99, 195, 251, 155, 131, 3, 255, 254, 0, 0, 0, 0,
-                                      31, 63, 48, 48, 54, 55, 48, 49, 49, 48, 63, 31, 0, 0, 0, 0 };
+                                      31, 63, 48, 48, 54, 55, 48, 49, 49, 48, 63, 31, 0, 0, 0, 0
+                                    };
 
 
 //----------------
 
 
 
+#define REFRESH_LOOP_INTERVAL 200
+float Kp = 2;     // Proportional gain
+float Ki = 0.01;  // Integral gain
+float Kd = 5;   // Derivative gain
+int minOutput = 0;
+int maxOutput = 255;
 
-
+PIDController pid;
 struct settings config;
 
+
+#ifndef ARDPRINTF
+#define ARDPRINTF
+#define ARDBUFFER 16
+#include <stdarg.h>
+#include <Arduino.h>
+
+int ardprintf(char *str, ...)
+{
+  int i, count=0, j=0, flag=0;
+  char temp[ARDBUFFER+1];
+  for(i=0; str[i]!='\0';i++)  if(str[i]=='%')  count++;
+
+  va_list argv;
+  va_start(argv, count);
+  for(i=0,j=0; str[i]!='\0';i++)
+  {
+    if(str[i]=='%')
+    {
+      temp[j] = '\0';
+      Serial.print(temp);
+      j=0;
+      temp[0] = '\0';
+
+      switch(str[++i])
+      {
+        case 'd': Serial.print(va_arg(argv, int));
+                  break;
+        case 'l': Serial.print(va_arg(argv, long));
+                  break;
+        case 'f': Serial.print(va_arg(argv, double));
+                  break;
+        case 'c': Serial.print((char)va_arg(argv, int));
+                  break;
+        case 's': Serial.print(va_arg(argv, char *));
+                  break;
+        default:  ;
+      };
+    }
+    else 
+    {
+      temp[j] = str[i];
+      j = (j+1)%ARDBUFFER;
+      if(j==0) 
+      {
+        temp[ARDBUFFER] = '\0';
+        Serial.print(temp);
+        temp[0]='\0';
+      }
+    }
+  };
+  Serial.println();
+  return count + 1;
+}
+#undef ARDBUFFER
+#endif
 
 input_mode getinput() {
 
@@ -757,14 +828,15 @@ void startupsceen() {
   lcd.display(0);
 }
 
+
+#define HOMEMENU_GOMENU 0
+#define HOMEMENU_ADJUST_TEMP 1
+
 void homescreen(void) {
   lcd.setFont(Small5x6PL);
   lcd.cls();
   int menu_setting = 0;
   bool menu_adjust_enable = true;
-#define HOMEMENU_GOMENU 0
-#define HOMEMENU_ADJUST_TEMP 1
-
 
   char cur_temp[6];
   char set_temp[6];
@@ -774,12 +846,22 @@ void homescreen(void) {
   const unsigned long REFRESH_INTERVAL = 1000;  // ms
   unsigned long previousMillis = 0;
   bool updatemenu = true;
-
-
+  unsigned long currentMillis = 0;
+  unsigned long previousMillis_PIDLOOP = 0;
+  int pid_output = 0;
 
   while (1) {
-    unsigned long currentMillis = millis();
-    if (currentMillis - previousMillis > REFRESH_INTERVAL || updatemenu) {
+    currentMillis = millis();
+    if (currentMillis - previousMillis_PIDLOOP > REFRESH_LOOP_INTERVAL) {
+      previousMillis_PIDLOOP = currentMillis;
+      config.temperature_current = thermocouple.readCelsius();
+      pid_output = pid.compute(config.temperature_current);
+      Serial.print(config.temperature_current);
+      Serial.print(" ");
+      Serial.println(pid_output);
+      analogWrite(SCR_CNTRL,pid_output);
+    }
+    if ((currentMillis - previousMillis > REFRESH_INTERVAL ) || updatemenu) {
       previousMillis = currentMillis;
 
 
@@ -829,6 +911,7 @@ void homescreen(void) {
       observe == R_RIGHT ? config.temperature_set++ : config.temperature_set--;
       if (config.temperature_set < 40) config.temperature_set = 40;
       if (config.temperature_set > 300) config.temperature_set = 300;
+      pid.setpoint(config.temperature_set);
       updatemenu = true;
       //set actual temperature here
     }
@@ -863,7 +946,7 @@ void menuscreen(void) {
       }
     }
 
-    if (observe == BUTN1){
+    if (observe == BUTN1) {
       engine->navigate(engine->getNext());
     }
 
@@ -912,12 +995,22 @@ void setup(void) {
   Serial.begin(115200);
   r1.begin(true);
   pinMode(BUZZER, OUTPUT);
+  pinMode(SCR_CNTRL,OUTPUT);
+  pinMode(FAN_CNTRL,OUTPUT);
   digitalWrite(BUZZER, LOW);
+  digitalWrite(SCR_CNTRL, LOW);
+  analogWrite(FAN_CNTRL, 50);
+  
   SPI.begin();
   config.sound_feedback = true;
-  config.temperature_set = 50;
-  config.temperature_current = 300;
+  config.temperature_set = 27;
+  config.temperature_current = thermocouple.readCelsius();
   config.fanspeed = 80;
+  pid.begin();          // initialize the PID instance
+  pid.setpoint(27);    // The "goal" the PID controller tries to "reach"
+  pid.tune(Kp, Ki, Kd);    // Tune the PID, arguments: kP, kI, kD
+  pid.limit(0, 255); 
+  
 
   Serial.print("Started Base");
   lcd.init();
