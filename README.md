@@ -31,7 +31,7 @@ https://github.com/haris-mujeeb/Temperature_PID_Controller/assets/57053470/dda72
 ## Libraries
 
 https://github.com/brianlow/Rotary.git \
-https://github.com/cbm80amiga/ST7920_SPI.git\
+https://github.com/cbm80amiga/ST7920_SPI.git \
 https://github.com/cbm80amiga/PropFonts.git \
 https://github.com/0xPIT/menu.git \
 https://github.com/ArduinoGetStarted/button.git \
