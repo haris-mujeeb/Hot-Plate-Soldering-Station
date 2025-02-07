@@ -630,7 +630,7 @@ int getTempAtTime(int elapsed_time, int *gprms) {
   if (elapsed_time < x2) return y2;
   if (elapsed_time < x3) return ((y3 - y2) / (x3 - x2)) * elapsed_time - ((y3 - y2) / (x3 - x2)) * x2 + y2;
   if (elapsed_time < x4) return y3;
-  if (elapsed_time < x5) return (-y3/(x5-x4))*elapsed_time - (-y3/(x5-x4))*x4 + y3;
+  if (elapsed_time < x5) return (-y3 / (x5 - x4)) * elapsed_time - (-y3 / (x5 - x4)) * x4 + y3;
 }
 
 #define REFRESH_TIMEPROCEDURE 1000
@@ -702,7 +702,7 @@ void procedurescreen() {
         Serial.println("Procedure paused");
       }
 
-      updatemenu = true;// updates the menu every one second
+      updatemenu = true;  // updates the menu every one second
     }
 
     if (updatemenu) {
@@ -997,6 +997,10 @@ void menuscreen(void) {
   lcd.cls();
   analogWrite(SCR_CNTRL, 0);  //when browsing menu turn off the heater
   input_mode observe;
+
+  strcpy((&miSound)->Label, config.sound_feedback ? "Sound : ON" : "Sound : OFF");
+  strcpy((&miFan)->Label, config.fanspeed != 0 ? "Fan : ON" : "Fan : OFF");
+
   engine->navigate(&miMainmenu);
   bool update_menu = true;
   while (1) {
@@ -1022,6 +1026,19 @@ void menuscreen(void) {
         engine->navigate(&miMainmenu);
 
         lcd.setFont(Small5x6PL);
+        update_menu = true;
+      }
+
+      if (engine->currentItem == &miSound) {
+        config.sound_feedback = !config.sound_feedback;
+        strcpy(engine->currentItem->Label, config.sound_feedback ? "Sound : ON" : "Sound : OFF");
+        update_menu = true;
+      }
+
+      if (engine->currentItem == &miFan) {
+        config.fanspeed == 0 ? config.fanspeed = 100 : config.fanspeed = 0;
+        strcpy(engine->currentItem->Label, config.fanspeed != 0 ? "Fan : ON" : "Fan : OFF");
+        analogWrite(FAN_CNTRL, config.fanspeed);
         update_menu = true;
       }
 
