@@ -1,4 +1,6 @@
 # HotPlate Soldering Station
+![WhatsApp Image 2025-02-17 at 6 19 05 AM](https://github.com/user-attachments/assets/306d3a8b-0f5e-4c47-950f-54478c5a5198)
+
 
 ## Fetaures
 - Live Temperature
@@ -12,8 +14,14 @@
 https://github.com/user-attachments/assets/88b22581-7505-4ef9-8fa4-fe2a85b40a39
 
 
-## GUI Demo:
+## Demo:
 https://github.com/user-attachments/assets/b78ecd9c-0edc-4410-997e-d083a02bd01b
+
+
+
+https://github.com/user-attachments/assets/c4e61a9d-8154-40fe-b36f-5ddaf2e73ea8
+
+
 
 
 ## Temp vs Time Plot
