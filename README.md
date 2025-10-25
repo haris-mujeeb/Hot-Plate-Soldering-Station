@@ -15,10 +15,21 @@ A DIY hot plate soldering station built with Arduino, featuring precise temperat
 
 ## Demos
 
-*   **Soldering Demo:** https://github.com/user-attachments/assets/88b22581-7505-4ef9-8fa4-fe2a85b40a39
-*   **General Demo:** https://github.com/user-attachments/assets/b78ecd9c-0edc-4410-997e-d083a02bd01b
-*   **Additional Demo:** https://github.com/user-attachments/assets/c4e61a9d-8154-40fe-b36f-5ddaf2e72ea8
-*   **Temperature vs. Time Plot:** https://github.com/haris-mujeeb/Temperature_PID_Controller/assets/57053470/dda725fb-990f-4ae4-9134-b8c20268912f
+*   **Soldering Demo:** 
+
+https://github.com/user-attachments/assets/88b22581-7505-4ef9-8fa4-fe2a85b40a39
+
+*   **General Demo:** 
+
+https://github.com/user-attachments/assets/b78ecd9c-0edc-4410-997e-d083a02bd01b
+
+*   **Additional Demo:** 
+
+https://github.com/user-attachments/assets/c4e61a9d-8154-40fe-b36f-5ddaf2e72ea8
+
+*   **Temperature vs. Time Plot:** 
+
+https://github.com/haris-mujeeb/Temperature_PID_Controller/assets/57053470/dda725fb-990f-4ae4-9134-b8c20268912f
 
 ## Hardware Components
 
